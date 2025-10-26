@@ -20,13 +20,16 @@
             <label for="chute">Chute</label>
             <input type="number" name="chute" id="chute">
 
-            <button onclick="Chutar()">Chutar</button>
+            <button type="button" onclick="Chutar()">Chutar</button>
         </div>
 
         <h3 id="resposta"></h3>
         <p id="dicas"></p>
         <p id="tentativasRestantes"></p>
         <h2 id="fim"></h2>
+        <div id="reiniciar">
+            <button type="button" onclick="reiniciar()">Reiniciar Jogo</button>
+        </div>
     </main>
     <script src="code.js"></script>
 </body>

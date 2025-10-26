@@ -1,48 +1,87 @@
-const obterElementoHTML = (elemento) => document.getElementById(elemento)
+const obterElementoHTML = (elemento) => document.getElementById(elemento);
 
-const numeroSecreto = Math.floor(Math.random() * 101);
+const getNumeroSecreto = () => Math.floor(Math.random() * 101);
+let numeroSecreto = getNumeroSecreto();
 let tentativas = 10;
+const MAX_TENTATIVAS = 10;
 
-let tentativasRestantes = obterElementoHTML("tentativasRestantes")
-const resposta = obterElementoHTML("resposta")
-const dicas = obterElementoHTML("dicas")
-const fim = obterElementoHTML("fim")
-const input = obterElementoHTML("input")
+const inputChute = obterElementoHTML("chute");
+const divInputContainer = obterElementoHTML("input");
+const tentativasRestantes = obterElementoHTML("tentativasRestantes");
+const resposta = obterElementoHTML("resposta");
+const dicas = obterElementoHTML("dicas");
+const fim = obterElementoHTML("fim");
+const reiniciarDiv = obterElementoHTML("reiniciar");
+const fimDeJogo = (vitoria = false) => {
+    divInputContainer.style.display = "none";
 
-const Chutar = () => {
-    const chute = obterElementoHTML("chute").value
+    reiniciarDiv.style.display = "block";
 
-    if (!(chute >= 0 && chute <= 100))
-        return resposta.textContent = "Digite um numero entre 0 e 100"
+    resposta.textContent = "";
+    dicas.textContent = "";
+    tentativasRestantes.textContent = "";
 
-    tentativas--
-
-    if (numeroSecreto == chute) {
-        resposta.textContent = "";
-        dicas.textContent = "";
-        tentativasRestantes.textContent = ""
-        input.style.display = "none"
-        fim.style.color = "#58f758"
-        return fim.textContent = "🎉 Voce acerto!"
+    if (vitoria) {
+        fim.style.color = "#58f758";
+        fim.textContent = "🎉 Você acertou!";
     } else {
-        resposta.textContent = "❌ Tente novamente"
+        fim.style.color = "#ff4a4a";
+        fim.textContent = `😢 Você perdeu! O número secreto era ${numeroSecreto}.`;
     }
-
-    if (chute < numeroSecreto) {
-        dicas.textContent = "Dica: 🔼 O número secreto é maior.";
-    } else {
-        dicas.textContent = "Dica: 🔽 O número secreto é menor.";
-    }
-
-    if (tentativas == 0) {
-        resposta.textContent = "";
-        dicas.textContent = "";
-        tentativasRestantes.textContent = ""
-        input.style.display = "none"
-        fim.style.color = "#ff4a4a"
-        return fim.textContent = `😢 Você perdeu! O número secreto era ${numeroSecreto}.`
-    }
-    console.log(numeroSecreto)
-    tentativasRestantes.textContent = `Tentativas restantes: ${tentativas}`
 }
 
+const Chutar = () => {
+    let chute = inputChute.value;
+    const numeroChutado = parseInt(chute);
+
+    if (isNaN(numeroChutado) || numeroChutado < 0 || numeroChutado > 100) {
+        inputChute.value = "";
+        return resposta.textContent = "Digite um número válido entre 0 e 100";
+    }
+
+    tentativas--;
+
+    if (numeroChutado === numeroSecreto) {
+        fimDeJogo(true);
+        return;
+
+    } else {
+        resposta.textContent = "❌ Tente novamente";
+
+        if (numeroChutado < numeroSecreto) {
+            dicas.innerHTML = `Dica: 🔼 O número secreto é <span style="color:#58f758"
+            >MAIOR</span>.`;
+        } else {
+            dicas.innerHTML = `Dica: 🔼 O número secreto é <span style="color:#ff4a4a"
+            >MENOR</span>.`;
+        }
+
+        if (tentativas === 0) {
+            fimDeJogo(false);
+            return;
+        }
+    }
+
+    inputChute.value = "";
+    tentativasRestantes.textContent = `Tentativas restantes: ${tentativas} `;
+}
+
+addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && divInputContainer.style.display !== "none") {
+        Chutar();
+    }
+})
+
+const reiniciar = () => {
+    numeroSecreto = getNumeroSecreto();
+    tentativas = MAX_TENTATIVAS;
+
+    resposta.textContent = "";
+    dicas.textContent = "";
+    fim.textContent = "";
+    inputChute.value = "";
+    tentativasRestantes.textContent = '';
+
+    divInputContainer.style.display = "block";
+    inputChute.focus();
+}
